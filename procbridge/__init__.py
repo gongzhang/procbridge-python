@@ -93,7 +93,7 @@ def _start_connection(server: Server, s: socket.socket):
             p.write_good_response(s, result)
         except Exception as err:
             p.write_bad_response(s, str(err))
-    except:
+    except Exception:
         pass
     finally:
         s.close()

@@ -86,39 +86,39 @@ def write_socket(s: socket.socket, status_code: StatusCode, json_obj: dict):
 
 
 def write_request(s: socket.socket, method: str, payload: Any):
-    if payload is None:
-        write_socket(s, StatusCode.REQUEST, {
-            Keys.METHOD.value: method
-        })
-    else:
-        write_socket(s, StatusCode.REQUEST, {
-            Keys.METHOD.value: method,
-            Keys.PAYLOAD.value: payload
-        })
+    body = {}
+    if method is not None:
+        body[Keys.METHOD.value] = method
+    if payload is not None:
+        body[Keys.PAYLOAD.value] = payload
+    write_socket(s, StatusCode.REQUEST, body)
 
 
 def write_good_response(s: socket.socket, payload: dict):
-    write_socket(s, StatusCode.GOOD_RESPONSE, {
-        Keys.PAYLOAD.value: payload
-    })
+    body = {}
+    if payload is not None:
+        body[Keys.PAYLOAD.value] = payload
+    write_socket(s, StatusCode.GOOD_RESPONSE, body)
 
 
 def write_bad_response(s: socket.socket, message: str):
-    write_socket(s, StatusCode.BAD_RESPONSE, {
-        Keys.MESSAGE.value: message
-    })
+    body = {}
+    if message is not None:
+        body[Keys.MESSAGE.value] = message
+    write_socket(s, StatusCode.BAD_RESPONSE, body)
 
 
 def read_request(s: socket.socket) -> (str, Any):
     status_code, obj = read_socket(s)
     if status_code != StatusCode.REQUEST.value:
         raise ProtocolError(ErrorMessages.UNKNOWN_STATUS_CODE, "{}".format(status_code))
-    if Keys.METHOD.value not in obj:
-        raise ProtocolError(ErrorMessages.INVALID_BODY, "missing {} key".format(Keys.METHOD.value))
+    method = None
+    payload = None
+    if Keys.METHOD.value in obj:
+        method = str(obj[Keys.METHOD.value])
     if Keys.PAYLOAD.value in obj:
-        return str(obj[Keys.METHOD.value]), obj[Keys.PAYLOAD.value]
-    else:
-        return str(obj[Keys.METHOD.value]), None
+        payload = obj[Keys.PAYLOAD.value]
+    return method, payload
 
 
 def read_response(s: socket.socket) -> (StatusCode, Any):

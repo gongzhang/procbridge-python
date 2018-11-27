@@ -1,3 +1,4 @@
+import time
 import unittest
 import procbridge as pb
 
@@ -19,10 +20,16 @@ class TestProcBridge(unittest.TestCase):
         cls.server.stop()
 
     @staticmethod
-    def delegate(api, arg):
-        if api == 'hello':
-            return 'hello'
-        pass
+    def delegate(method, payload):
+        print("Called {} with {}".format(method, payload))
+        if method == 'echo':
+            return payload
+        elif method == 'sum':
+            return sum(x for x in payload)
+        elif method == 'err':
+            raise RuntimeError("generated error")
+        elif method == 'sleep':
+            time.sleep(payload)
 
     def setUp(self):
         self.client = pb.Client('127.0.0.1', PORT)
@@ -30,12 +37,37 @@ class TestProcBridge(unittest.TestCase):
     def tearDown(self):
         self.client = None
 
-    def test_1(self):
-        reply = self.client.request('hello', {'name': 'Gong'})
-        self.assertEqual('hello', reply)
+    def testNone(self):
+        reply = self.client.request(None, None)
+        self.assertIsNone(reply)
+        reply = self.client.request("echo", None)
+        self.assertIsNone(reply)
+        reply = self.client.request(None, "hello")
+        self.assertIsNone(reply)
 
-    def test_2(self):
-        self.assertTrue(True)
+    def testEcho(self):
+        reply = self.client.request("echo", 123)
+        self.assertEqual(123, reply)
+        reply = self.client.request("echo", 3.14)
+        self.assertEqual(3.14, reply)
+        reply = self.client.request("echo", "hello")
+        self.assertEqual("hello", reply)
+        reply = self.client.request("echo", ["a", "b"])
+        self.assertEqual(["a", "b"], reply)
+        reply = self.client.request("echo", {"key": "value"})
+        self.assertEqual({"key": "value"}, reply)
+
+    def testSum(self):
+        reply = self.client.request("sum", [1, 2, 3, 4])
+        self.assertEqual(10, reply)
+
+    def testError(self):
+        try:
+            self.client.request("err")
+        except pb.ServerError as err:
+            self.assertEqual("generated error", err.message)
+        else:
+            self.fail()
 
 
 if __name__ == '__main__':
