@@ -1,13 +1,11 @@
-from typing import Any, Callable
-
-__all__ = ["Server", "Client", "Versions", "ProtocolError", "ServerError"]
-
-
 import threading
 import socket
-from errors import ProtocolError, ServerError
 import protocol as p
+from typing import Any, Callable
+from errors import ProtocolError, ServerError
 from const import StatusCode, Versions
+
+__all__ = ["Server", "Client", "Versions", "ProtocolError", "ServerError"]
 
 
 class Client:
