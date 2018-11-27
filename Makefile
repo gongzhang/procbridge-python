@@ -5,6 +5,7 @@ clean:
 	rm -rf procbridge.egg-info
 
 build:
+	# https://packaging.python.org/tutorials/packaging-projects/
 	python3 setup.py sdist bdist_wheel
 
 upload_test:
