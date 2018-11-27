@@ -94,7 +94,7 @@ def write_request(s: socket.socket, method: str, payload: Any):
     write_socket(s, StatusCode.REQUEST, body)
 
 
-def write_good_response(s: socket.socket, payload: dict):
+def write_good_response(s: socket.socket, payload: Any):
     body = {}
     if payload is not None:
         body[Keys.PAYLOAD.value] = payload
