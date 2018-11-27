@@ -3,7 +3,7 @@ import json
 from typing import Any
 
 from const import StatusCode, Keys, Versions
-from errors import ProtocolError, ErrorMessages, ServerError
+from errors import ProtocolError, ErrorMessages
 
 
 def read_bytes(s: socket.socket, count: int) -> bytes:
@@ -28,7 +28,7 @@ def read_socket(s: socket.socket) -> (int, dict):
 
     # 2. VERSION
     ver = read_bytes(s, 2)
-    if ver != Versions.current():
+    if ver != Versions.current().value:
         raise ProtocolError(ErrorMessages.INCOMPATIBLE_VERSION,
                             "need version {} but found {}".format(Versions.current(), ver))
 
@@ -59,7 +59,7 @@ def read_socket(s: socket.socket) -> (int, dict):
                             'expect ' + str(json_len) + ' bytes but found' + str(len(text_bytes)))
     try:
         obj = json.loads(str(text_bytes, encoding='utf-8'), encoding='utf-8')
-    except (json.JSONDecodeError, TypeError) as err:
+    except Exception as err:
         raise ProtocolError(ErrorMessages.INVALID_BODY, "{}".format(err))
 
     return code, obj
@@ -69,7 +69,7 @@ def write_socket(s: socket.socket, status_code: StatusCode, json_obj: dict):
     # 1. FLAG
     s.sendall(b'pb')
     # 2. VERSION
-    s.sendall(Versions.current())
+    s.sendall(Versions.current().value)
     # 3. STATUS CODE
     s.sendall(bytes([status_code.value]))
     # 4. RESERVED 2 BYTES
