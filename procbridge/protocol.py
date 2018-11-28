@@ -111,7 +111,7 @@ def write_bad_response(s: socket.socket, message: str):
 def read_request(s: socket.socket) -> (str, Any):
     status_code, obj = read_socket(s)
     if status_code != StatusCode.REQUEST.value:
-        raise ProtocolError(ErrorMessages.UNKNOWN_STATUS_CODE, "{}".format(status_code))
+        raise ProtocolError(ErrorMessages.INVALID_STATUS_CODE, "{}".format(status_code))
     method = None
     payload = None
     if Keys.METHOD.value in obj:
@@ -134,4 +134,4 @@ def read_response(s: socket.socket) -> (StatusCode, Any):
         else:
             return StatusCode.BAD_RESPONSE, str(obj[Keys.MESSAGE.value])
     else:
-        raise ProtocolError(ErrorMessages.UNKNOWN_STATUS_CODE, "{}".format(status_code))
+        raise ProtocolError(ErrorMessages.INVALID_STATUS_CODE, "{}".format(status_code))

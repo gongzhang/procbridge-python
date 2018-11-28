@@ -21,7 +21,6 @@ class TestProcBridge(unittest.TestCase):
 
     @staticmethod
     def delegate(method, payload):
-        print("Called {} with {}".format(method, payload))
         if method == 'echo':
             return payload
         elif method == 'sum':
@@ -68,6 +67,12 @@ class TestProcBridge(unittest.TestCase):
             self.assertEqual("generated error", err.message)
         else:
             self.fail()
+
+    def testBigPayload(self):
+        with open('article.txt', encoding='utf-8') as f:
+            text = f.read()
+            reply = self.client.request("echo", text)
+            self.assertEqual(text, reply)
 
 
 if __name__ == '__main__':

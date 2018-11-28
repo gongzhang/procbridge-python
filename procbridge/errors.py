@@ -1,7 +1,6 @@
 class ErrorMessages:
     UNRECOGNIZED_PROTOCOL = 'unrecognized protocol'
     INCOMPATIBLE_VERSION = 'incompatible protocol version'
-    UNKNOWN_STATUS_CODE = 'unknown status code'
     INCOMPLETE_DATA = 'incomplete data'
     INVALID_STATUS_CODE = 'invalid status code'
     INVALID_BODY = 'invalid body'
