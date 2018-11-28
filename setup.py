@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="procbridge",
-    version="1.1",
+    version="1.1.1",
     author="Gong Zhang",
     author_email="gong@me.com",
     description="A super-lightweight IPC (Inter-Process Communication) protocol over TCP socket.",
