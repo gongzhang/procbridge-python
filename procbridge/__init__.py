@@ -38,7 +38,7 @@ class Server:
         self.socket = None
         self.delegate = delegate
 
-    def start(self):
+    def start(self, daemon=True):
         self.lock.acquire()
         try:
             if self.started:
@@ -48,9 +48,12 @@ class Server:
             self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self.socket.bind((self.host, self.port))
             self.socket.listen(0)
-            t = threading.Thread(target=_start_server_listener, args=(self,), daemon=True)
+            t = threading.Thread(target=_start_server_listener, args=(self,), daemon=daemon)
             t.start()
             self.started = True
+        except OSError as err:
+            self.socket.close()
+            raise err
         finally:
             self.lock.release()
 

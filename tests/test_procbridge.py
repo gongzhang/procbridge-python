@@ -1,8 +1,7 @@
-import time
 import unittest
 import procbridge as pb
-
-PORT = 8000
+from server import PORT
+from server import delegate
 
 
 class TestProcBridge(unittest.TestCase):
@@ -11,24 +10,18 @@ class TestProcBridge(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.server = pb.Server('0.0.0.0', PORT, cls.delegate)
-        cls.server.start()
-        pass
+        try:
+            cls.server = pb.Server('0.0.0.0', PORT, delegate)
+            cls.server.start()
+        except OSError:
+            print("use existing server on port {}".format(PORT))
+            cls.server = None
 
     @classmethod
     def tearDownClass(cls):
-        cls.server.stop()
-
-    @staticmethod
-    def delegate(method, payload):
-        if method == 'echo':
-            return payload
-        elif method == 'sum':
-            return sum(x for x in payload)
-        elif method == 'err':
-            raise RuntimeError("generated error")
-        elif method == 'sleep':
-            time.sleep(payload)
+        if cls.server is not None:
+            cls.server.stop()
+            cls.server = None
 
     def setUp(self):
         self.client = pb.Client('127.0.0.1', PORT)
