@@ -14,7 +14,7 @@ class Client:
         self.host = host
         self.port = port
 
-    def request(self, method: str, payload: Any = None) -> dict:
+    def request(self, method: str, payload: Any = None) -> Any:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((self.host, self.port))
         try:
@@ -94,7 +94,7 @@ def _start_connection(server: Server, s: socket.socket):
             p.write_good_response(s, result)
         except Exception as err:
             p.write_bad_response(s, str(err))
-    except Exception:
+    except Exception as err:
         pass
     finally:
         s.close()

@@ -56,7 +56,7 @@ def read_socket(s: socket.socket) -> (int, dict):
     text_bytes = read_bytes(s, json_len)
     if len(text_bytes) != json_len:
         raise ProtocolError(ErrorMessages.INCOMPLETE_DATA,
-                            'expect ' + str(json_len) + ' bytes but found' + str(len(text_bytes)))
+                            'expect ' + str(json_len) + ' bytes but found ' + str(len(text_bytes)))
     try:
         obj = json.loads(str(text_bytes, encoding='utf-8'), encoding='utf-8')
     except Exception as err:
