@@ -2,8 +2,8 @@ import socket
 import json
 from typing import Any
 
-from const import StatusCode, Keys, Versions
-from errors import ProtocolError, ErrorMessages
+from .const import StatusCode, Keys, Versions
+from .errors import ProtocolError, ErrorMessages
 
 
 def read_bytes(s: socket.socket, count: int) -> bytes:
