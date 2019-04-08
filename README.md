@@ -31,7 +31,8 @@ def delegate(method, payload):
 
 
 if __name__ == '__main__':
-    s = pb.Server('0.0.0.0', 8000, delegate)
+    PORT = 8000
+    s = pb.Server('0.0.0.0', PORT, delegate)
     s.start(daemon=False)
     print("Server is on {}...".format(PORT))
 ```
