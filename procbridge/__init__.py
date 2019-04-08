@@ -1,9 +1,9 @@
 import threading
 import socket
-import protocol as p
+from . import protocol as p
 from typing import Any, Callable
-from errors import ProtocolError, ServerError
-from const import StatusCode, Versions
+from .errors import ProtocolError, ServerError
+from .const import StatusCode, Versions
 
 __all__ = ["Server", "Client", "Versions", "ProtocolError", "ServerError"]
 
