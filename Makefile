@@ -4,6 +4,9 @@ clean:
 	rm -rf dist;
 	rm -rf procbridge.egg-info
 
+setup:
+	python3 -m pip install --upgrade setuptools wheel twine
+
 build:
 	# https://packaging.python.org/tutorials/packaging-projects/
 	python3 setup.py sdist bdist_wheel
