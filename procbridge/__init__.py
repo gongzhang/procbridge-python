@@ -11,12 +11,29 @@ __all__ = ["Server", "Client", "Versions", "ProtocolError", "ServerError"]
 class Client:
 
     def __init__(self, host: str, port: int):
+        self.family = socket.AF_INET
         self.host = host
         self.port = port
+        self.path = None
+
+    @classmethod
+    def from_unix(cls, path: str):
+        ins = cls('', 0)
+        ins.family = socket.AF_UNIX
+        ins.path = path
+        return ins
+
+    @classmethod
+    def from_inet(cls, host: str, port: int):
+        return cls(host, port)
 
     def request(self, method: str, payload: Any = None) -> Any:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((self.host, self.port))
+        if self.family == socket.AF_UNIX:
+            s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            s.connect(self.path)
+        else:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect((self.host, self.port))
         try:
             p.write_request(s, method, payload)
             code, result = p.read_response(s)
@@ -31,12 +48,25 @@ class Client:
 class Server:
 
     def __init__(self, host: str, port: int, delegate: Callable[[str, Any], Any]):
+        self.family = socket.AF_INET
         self.host = host
         self.port = port
+        self.path = None
         self.started = False
         self.lock = threading.Lock()
         self.socket = None
         self.delegate = delegate
+
+    @classmethod
+    def from_unix(cls, path: str, delegate: Callable[[str, Any], Any]):
+        ins = cls('', 0, delegate)
+        ins.family = socket.AF_UNIX
+        ins.path = path
+        return ins
+
+    @classmethod
+    def from_inet(cls, host: str, port: int, delegate: Callable[[str, Any], Any]):
+        return cls(host, port, delegate)
 
     def start(self, daemon=True):
         self.lock.acquire()
@@ -44,9 +74,14 @@ class Server:
             if self.started:
                 return
 
-            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            self.socket.bind((self.host, self.port))
+            if self.family == socket.AF_UNIX:
+                self.socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                self.socket.bind(self.path)
+            else:
+                self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                self.socket.bind((self.host, self.port))
             self.socket.listen(0)
             t = threading.Thread(target=_start_server_listener, args=(self,), daemon=daemon)
             t.start()
