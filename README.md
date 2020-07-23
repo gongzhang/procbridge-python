@@ -7,7 +7,7 @@ Please note that this repo is the **Python implementation** of ProcBridge protoc
 # Installation
 
 ```
-pip install procbridge==1.2.0
+pip install procbridge==1.2.1
 ```
 
 # Example
