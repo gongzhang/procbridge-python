@@ -28,7 +28,7 @@ class Client:
         return cls(host, port)
 
     def request(self, method: str, payload: Any = None) -> Any:
-        if self.family == socket.AF_UNIX:
+        if self.path is not None:
             s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
             s.connect(self.path)
         else:
@@ -74,7 +74,7 @@ class Server:
             if self.started:
                 return
 
-            if self.family == socket.AF_UNIX:
+            if self.path is not None:
                 self.socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
                 self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 self.socket.bind(self.path)
