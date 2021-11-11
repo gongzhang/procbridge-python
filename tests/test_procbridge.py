@@ -1,7 +1,7 @@
 import unittest
 import procbridge as pb
-from server import PORT
-from server import delegate
+from .server import PORT
+from .server import delegate
 
 
 class TestProcBridge(unittest.TestCase):
@@ -62,7 +62,7 @@ class TestProcBridge(unittest.TestCase):
             self.fail()
 
     def testBigPayload(self):
-        with open('article.txt', encoding='utf-8') as f:
+        with open('./tests/article.txt', encoding='utf-8') as f:
             text = f.read()
             reply = self.client.request("echo", text)
             self.assertEqual(text, reply)

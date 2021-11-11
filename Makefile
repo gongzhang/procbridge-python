@@ -1,4 +1,7 @@
 .ONESHELL:
+test:
+	python3 -m unittest
+
 clean:
 	rm -rf build;
 	rm -rf dist;
